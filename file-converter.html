@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>File Converter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f3f3f3;
+            margin: 0;
+            padding: 0;
+        }
+        
+        h1 {
+            text-align: center;
+            padding: 20px 0;
+            background-color: #333;
+            color: #fff;
+            margin: 0;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 30px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+        }
+        
+        #file-input {
+            display: none;
+        }
+        
+        .file-label {
+            background-color: #333;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            display: inline-block;
+        }
+        
+        #image-preview {
+            max-width: 100%;
+            max-height: 400px;
+            margin-top: 20px;
+            display: block;
+        }
+        
+        #convert-btn {
+            background-color: #333;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+            display: block;
+            width: 100%;
+        }
+        
+        #convert-btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        
+        #converted-image {
+            max-width: 100%;
+            max-height: 400px;
+            margin-top: 20px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>File Converter</h1>
+    
+    <div class="container">
+        <input type="file" id="file-input" accept="image/png">
+        <label for="file-input" class="file-label">Choose a PNG file to convert</label>
+        
+        <img id="image-preview" src="#" alt="Image Preview">
+        
+        <button id="convert-btn" disabled>Convert to JPEG</button>
+        
+        <div>
+            <h2>Converted Image:</h2>
+            <img id="converted-image" src="#" alt="Converted Image">
+        </div>
+    </div>
+    
+    <script>
+        const fileInput = document.getElementById('file-input');
+        const imagePreview = document.getElementById('image-preview');
+        const convertBtn = document.getElementById('convert-btn');
+        const convertedImage = document.getElementById('converted-image');
+        
+        fileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                imagePreview.src = e.target.result;
+                convertBtn.disabled = false;
+                convertedImage.style.display = 'none';
+            };
+            
+            reader.readAsDataURL(file);
+        });
+        
+        convertBtn.addEventListener('click', function() {
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            const mimeType = 'image/jpeg';
+            
+            canvas.width = imagePreview.naturalWidth;
+            canvas.height = imagePreview.naturalHeight;
+            
+            context.drawImage(imagePreview, 0, 0);
+            
+            canvas.toBlob(function(blob) {
+                const convertedUrl = URL.createObjectURL(blob);
+                convertedImage.src = convertedUrl;
+                convertedImage.style.display = 'inline';
+                
+                // You can add additional logic here, such as downloading the converted image.
+                // const downloadLink = document.createElement('a');
+                // downloadLink.href = convertedUrl;
+                // downloadLink.download = 'converted.jpg';
+                // downloadLink.click();
+            }, mimeType);
+        });
+    </script>
+</body>
+</html>
